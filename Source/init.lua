@@ -115,6 +115,19 @@ local function stepSpringer(self: Springer, deltaTime: number): Springer
 	return self
 end
 
+--[[
+	Springer:SetTarget(newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?): Springer
+
+		Sets the target value of the spring. The spring will start animating towards the target value.
+		You can also set the frequency and damping of the spring.
+		If the frequency and damping are not provided, the spring will use the default values of 1.
+
+		@param newTarget number | Vector2 | Vector3 -- The target value of the spring.
+		@param frequency number? -- The frequency of the spring.
+		@param damping number? -- The damping of the spring.
+
+		@return Springer -- The Springer instance.
+]]
 function Springer.SetTarget(self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?): Springer
 	if self.springType ~= typeof(newTarget) then
 		error(`Invalid target type. This spring accepts {self.springType} NOT {typeof(newTarget)}`)
