@@ -15,7 +15,7 @@ jobs:
             - name: Docs Dispatch
               uses: peter-evans/repository-dispatch@v3
               with:
-                token: ${ ${GITHUB_TOKEN} }
+                token: ${{ secrets.PAT }}
                 repository: naxdocs
                 event-type: update-docs
                 client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
