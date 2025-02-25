@@ -1,0 +1,7 @@
+{
+    "name": "springer",
+    "emitLegacyScripts": false,
+    "tree": {
+        "$path": "Source"
+    }
+}

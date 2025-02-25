@@ -1,0 +1,13 @@
+{
+    "name": "springer",
+    "emitLegacyScripts": false,
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "$ignoreUnknownInstances": true,
+            "Springer": {
+                "$path": "Source"
+            }   
+        }
+    }
+}
