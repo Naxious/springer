@@ -21,6 +21,15 @@ export type Springer = {
 	SetTarget: (self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?) -> Springer
 }
 
+--[[
+	@class Springer
+
+		Springer is a class that allows you to animate values using a spring physics model.
+		The values you can animate are numbers, Vector2, and Vector3.
+		You can set the target value, frequency, and damping to customize the spring.
+		You can also listen to the `onStep` signal to get the current value of the spring.
+		When the spring reaches the target value, the `onComplete` signal will be fired.
+]]
 local Springer = {}
 
 local function getMagnitude(value)
@@ -108,7 +117,7 @@ end
 
 function Springer.SetTarget(self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?): Springer
 	if self.springType ~= typeof(newTarget) then
-		error(`Invalid target type. This spring accepts {self.springType} NOT  {typeof(newTarget)}`)
+		error(`Invalid target type. This spring accepts {self.springType} NOT {typeof(newTarget)}`)
 	end
 
 	self.target = newTarget
