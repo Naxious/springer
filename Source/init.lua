@@ -108,7 +108,7 @@ end
 
 function Springer.SetTarget(self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?): Springer
 	if self.springType ~= typeof(newTarget) then
-		error(`Invalid target type. This spring accepts {self.springType} NOT {typeof(newTarget)}`)
+		error(`Invalid target type. This spring accepts {self.springType} NOT  {typeof(newTarget)}`)
 	end
 
 	self.target = newTarget
