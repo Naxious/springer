@@ -118,7 +118,7 @@ end
 --[=[
 	Springer:SetTarget(newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?): Springer
 
-		Sets the target value of the spring. The spring will start animating towards the target value.
+		TESTING Sets the target value of the spring. The spring will start animating towards the target value.
 		You can also set the frequency and damping of the spring.
 		If the frequency and damping are not provided, the spring will use the default values of 1.
 
