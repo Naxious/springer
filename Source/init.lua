@@ -8,20 +8,7 @@ local EPSILON = 0.0001
 
 --[=[
 	@within Springer
-	@type Springer = {
-		value: number | Vector2 | Vector3,
-		velocity: number | Vector2 | Vector3,
-		target: number | Vector2 | Vector3,
-		frequency: number,
-		damping: number,
-		springType: string,
-		isActive: boolean,
-
-		onComplete: Signal.Signal,
-		onStep: Signal.Signal,
-
-		SetTarget: (self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?) -> Springer
-	}
+	@type constructor.new -> Springer
 ]=]
 export type Springer = {
 	value: number | Vector2 | Vector3,
