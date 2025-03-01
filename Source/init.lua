@@ -6,23 +6,7 @@ local VELOCITY_THRESHOLD = 0.001
 local POSITION_THRESHOLD = 0.001
 local EPSILON = 0.0001
 
---[=[
-	@within Springer
-	@type Springer {
-		.value number | Vector2 | Vector3,
-		.velocity number | Vector2 | Vector3,
-		.target number | Vector2 | Vector3,
-		.frequency number,
-		.damping number,
-		.springType string,
-		.isActive boolean,
 
-		.onComplete SpringerSignal.SpringerSignal,
-		.onStep SpringerSignal.SpringerSignal,
-
-		.SetTarget (self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?) -> Springer
-	}
-]=]
 export type Springer = {
 	value: number | Vector2 | Vector3,
 	velocity: number | Vector2 | Vector3,
@@ -187,7 +171,13 @@ function Springer.SetTarget(self: Springer, newTarget: number | Vector2 | Vector
 end
 
 local constructor = {}
+--[=[
+	@within Springer
+	@name Springer.new
 
+	@returns Springer -- The Springer instance.
+	constructs a new Springer instance.
+]=]
 function constructor.new(initialValue: number | Vector2 | Vector3, frequency: number?, damping: number?, initialGoal: (number | Vector2 | Vector3)?): Springer
 	local springerInstance = setmetatable({
 		value = initialValue or 0,
