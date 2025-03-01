@@ -173,8 +173,6 @@ end
 local constructor = {}
 --[=[
 	@within Springer
-	@name Springer.new
-
 	@return Springer -- The Springer instance.
 	constructs a new Springer instance.
 ]=]
