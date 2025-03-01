@@ -22,8 +22,6 @@ export type Springer = {
 	SetTarget: (self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?) -> Springer
 }
 
-
-
 --[=[
 	@class Springer
 
@@ -32,6 +30,18 @@ export type Springer = {
 	You can set the target value, frequency, and damping to customize the spring.
 	You can also listen to the `onStep` SpringerSignal to get the current value of the spring.
 	When the spring reaches the target value, the `onComplete` SpringerSignal will be fired.
+
+	Here is an example of how to use the Springer class to animate a number from 0 to 1 in 1 second:
+	```lua
+	local springer = Springer.new(0, 1, 1)
+	springer:SetTarget(1, 1, 1)
+	springer.onStep:Connect(function(value)
+		print(value)
+	end)
+	springer.onComplete:Connect(function()
+		print("Springer completed")
+	end)
+	```
 ]=]
 local Springer = {}
 
@@ -125,6 +135,21 @@ end
 		You can also set the frequency and damping of the spring.
 		If the frequency and damping are not provided, the spring will use the default values of 1.
 
+		Here is an example of how to use the SetTarget method to bounce between two values every 3 seconds:
+		```lua
+		local springer = Springer.new(0, 1, 1)
+		local switch = true
+		while true do
+			task.wait(3)
+			if switch then
+				springer:SetTarget(1, 1, 1)
+			else
+				springer:SetTarget(0, 1, 1)
+			end
+			switch = not switch
+		end
+		```
+
 		@param newTarget number | Vector2 | Vector3 -- The target value of the spring.
 		@param frequency number? -- The frequency of the spring.
 		@param damping number? -- The damping of the spring.
@@ -175,6 +200,11 @@ local constructor = {}
 	@within Springer
 	@return Springer -- The Springer instance.
 	constructs a new Springer instance.
+
+	:::note
+		The .new method is a constructor and should be called with a colon from the Springer ModuleScript.
+		Springer instances themselves, will not contain the .new method.
+	:::
 ]=]
 function constructor.new(initialValue: number | Vector2 | Vector3, frequency: number?, damping: number?, initialGoal: (number | Vector2 | Vector3)?): Springer
 	local springerInstance = setmetatable({
