@@ -42,7 +42,6 @@ end
 	@class Signal
 	@server
 	@client
-	@shared
 
 	Signals are a way to create a connection between two parts of your code. They are similar to events, but with a few key differences. Signals are not tied to any specific event, and can be fired at any time. They can also be waited on, which allows you to pause the execution of your code until the signal is fired.
 
