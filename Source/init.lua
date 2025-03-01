@@ -175,7 +175,7 @@ local constructor = {}
 	@within Springer
 	@name Springer.new
 
-	@returns Springer -- The Springer instance.
+	@return Springer -- The Springer instance.
 	constructs a new Springer instance.
 ]=]
 function constructor.new(initialValue: number | Vector2 | Vector3, frequency: number?, damping: number?, initialGoal: (number | Vector2 | Vector3)?): Springer
