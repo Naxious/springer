@@ -35,8 +35,8 @@ export type Springer = {
 
 	Here is an example of how to use the Springer class to animate a number from 0 to 1 in 1 second:
 	```lua
-	local springer = Springer.new(0, 1, 1)
-	springer:SetTarget(1, 1, 1)
+	local springer = Springer.new(0, 5, .2)
+	springer:SetTarget(1, 10, .8)
 	springer.onStep:Connect(function(value)
 		print(value)
 	end)
@@ -48,16 +48,22 @@ export type Springer = {
 	You can access all of the properties directly from the Springer instance.
 	It is recommended to use the `SetTarget` method to animate the spring.
 	Setting the properties directly will not animate the spring.
-	Here is an example of how to access the value and velocity of the Springer instance:
+	Here is the Springer Class:
 	```lua
-	local springer = Springer.new(0, 1, 1)
-	print(springer.value)
-	print(springer.velocity)
-	print(springer.target)
-	print(springer.frequency)
-	print(springer.damping)
-	print(springer.springType)
-	print(springer.isActive)
+	export type Springer = {
+		value: number | Vector2 | Vector3,
+		velocity: number | Vector2 | Vector3,
+		target: number | Vector2 | Vector3,
+		frequency: number,
+		damping: number,
+		springType: string,
+		isActive: boolean,
+
+		onComplete: SpringerSignal.SpringerSignal,
+		onStep: SpringerSignal.SpringerSignal,
+
+		SetTarget: (self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?) -> Springer
+	}	
 	```
 
 	:::note
@@ -161,14 +167,14 @@ end
 
 	Here is an example of how to use the SetTarget method to bounce between two values every 3 seconds:
 	```lua
-	local springer = Springer.new(0, 1, 1)
+	local springer = Springer.new(0, 4, .3)
 	local switch = true
 	while true do
 		task.wait(3)
 		if switch then
-			springer:SetTarget(1, 1, 1)
+			springer:SetTarget(1, 6, .5)
 		else
-			springer:SetTarget(0, 1, 1)
+			springer:SetTarget(0, 2, .2)
 		end
 		switch = not switch
 	end
