@@ -2,14 +2,14 @@ export type Connection = {
 	Disconnect: (self: Connection) -> (),
 	connected: boolean,
 	_handler: (...any) -> (),
-	signal: Signal
+	signal: SpringerSignal
 }
 
-export type Signal = {
-	new: () -> Signal,
-	Connect: (self: Signal, handler: (...any) -> ()) -> Connection,
-	Fire: (self: Signal, ...any) -> (),
-	Wait: (self: Signal) -> ...any,
+export type SpringerSignal = {
+	new: () -> SpringerSignal,
+	Connect: (self: SpringerSignal, handler: (...any) -> ()) -> Connection,
+	Fire: (self: SpringerSignal, ...any) -> (),
+	Wait: (self: SpringerSignal) -> ...any,
 	_connections: {Connection},
 	_threads: {thread}
 }
@@ -39,11 +39,11 @@ function Connection:Disconnect()
 end
 
 --[=[
-	@class Signal
+	@class SpringerSignal
 	@server
 	@client
 
-	Signals are a way to create a connection between two parts of your code. They are similar to events, but with a few key differences. Signals are not tied to any specific event, and can be fired at any time. They can also be waited on, which allows you to pause the execution of your code until the signal is fired.
+	SpringerSignals are a way to create a connection between two parts of your code. They are similar to events, but with a few key differences. Signals are not tied to any specific event, and can be fired at any time. They can also be waited on, which allows you to pause the execution of your code until the signal is fired.
 
 	```lua
 	local Signal = require(path.to.Signal)
@@ -57,7 +57,7 @@ end
 	connection:Disconnect()
 	```
 
-	Signals are useful for creating a decoupled system, where different parts of your code can communicate without needing to know about each other. They are also useful for creating a system where you can pause the execution of your code until a certain condition is met.
+	SpringerSignals are useful for creating a decoupled system, where different parts of your code can communicate without needing to know about each other. They are also useful for creating a system where you can pause the execution of your code until a certain condition is met.
 
 	```lua
 	local Signal = require(path.to.Signal)
@@ -77,17 +77,17 @@ end
 	```
 ]=]
 
-local Signal = {}
-Signal.__index = Signal
+local SpringerSignal = {}
+SpringerSignal.__index = SpringerSignal
 
-function Signal.new()
+function SpringerSignal.new()
 	return setmetatable({
 		_connections = {},
 		_threads = {},
-	}, Signal)
+	}, SpringerSignal)
 end
 
-function Signal:Fire(...)
+function SpringerSignal:Fire(...)
 	for _, connection in self._connections do
 		connection._handler(...)
 	end
@@ -99,15 +99,15 @@ function Signal:Fire(...)
 	self._threads = {}
 end
 
-function Signal:Connect(handler)
+function SpringerSignal:Connect(handler)
 	local connection = Connection.new(self, handler)
 	table.insert(self._connections, connection)
 	return connection
 end
 
-function Signal:Wait()
+function SpringerSignal:Wait()
 	table.insert(self._threads, coroutine.running())
 	return coroutine.yield()
 end
 
-return Signal
+return SpringerSignal

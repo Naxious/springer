@@ -1,1 +1,1 @@
-{"name":"springer","className":"ModuleScript","filePaths":["Source\\init.lua","default.project.json"],"children":[{"name":"Signal","className":"ModuleScript","filePaths":["Source\\Signal.lua"]}]}
+{"name":"springer","className":"ModuleScript","filePaths":["Source\\init.lua","default.project.json"],"children":[{"name":"SpringerSignal","className":"ModuleScript","filePaths":["Source\\SpringerSignal.lua"]}]}
