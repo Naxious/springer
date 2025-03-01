@@ -44,6 +44,28 @@ export type Springer = {
 		print("Springer completed")
 	end)
 	```
+
+	You can access all of the properties directly from the Springer instance.
+	It is recommended to use the `SetTarget` method to animate the spring.
+	Setting the properties directly will not animate the spring.
+	Here is an example of how to access the value and velocity of the Springer instance:
+	```lua
+	local springer = Springer.new(0, 1, 1)
+	print(springer.value)
+	print(springer.velocity)
+	print(springer.target)
+	print(springer.frequency)
+	print(springer.damping)
+	print(springer.springType)
+	print(springer.isActive)
+	```
+
+	:::note
+		When you call the `SetTarget` method, the spring will start animating towards the target value.
+		If you set any of the properties directly, the spring animation will override them.
+		Setting isActive to false will stop the spring animation.(It will then not call the onComplete signal)
+		Setting isActive to true will NOT start the spring animation. You need to call the SetTarget method to start the animation.
+	:::
 ]=]
 local Springer = {}
 
