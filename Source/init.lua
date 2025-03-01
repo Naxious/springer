@@ -131,30 +131,30 @@ end
 --[=[
 	Springer:SetTarget(newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?): Springer
 
-		Sets the target value of the spring. The spring will start animating towards the target value.
-		You can also set the frequency and damping of the spring.
-		If the frequency and damping are not provided, the spring will use the default values of 1.
+	Sets the target value of the spring. The spring will start animating towards the target value.
+	You can also set the frequency and damping of the spring.
+	If the frequency and damping are not provided, the spring will use the default values of 1.
 
-		Here is an example of how to use the SetTarget method to bounce between two values every 3 seconds:
-		```lua
-		local springer = Springer.new(0, 1, 1)
-		local switch = true
-		while true do
-			task.wait(3)
-			if switch then
-				springer:SetTarget(1, 1, 1)
-			else
-				springer:SetTarget(0, 1, 1)
-			end
-			switch = not switch
+	Here is an example of how to use the SetTarget method to bounce between two values every 3 seconds:
+	```lua
+	local springer = Springer.new(0, 1, 1)
+	local switch = true
+	while true do
+		task.wait(3)
+		if switch then
+			springer:SetTarget(1, 1, 1)
+		else
+			springer:SetTarget(0, 1, 1)
 		end
-		```
+		switch = not switch
+	end
+	```
 
-		@param newTarget number | Vector2 | Vector3 -- The target value of the spring.
-		@param frequency number? -- The frequency of the spring.
-		@param damping number? -- The damping of the spring.
+	@param newTarget number | Vector2 | Vector3 -- The target value of the spring.
+	@param frequency number? -- The frequency of the spring.
+	@param damping number? -- The damping of the spring.
 
-		@return Springer -- The Springer instance.
+	@return Springer -- The Springer instance.
 ]=]
 function Springer.SetTarget(self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?): Springer
 	if self.springType ~= typeof(newTarget) then
