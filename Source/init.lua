@@ -6,6 +6,53 @@ local VELOCITY_THRESHOLD = 0.001
 local POSITION_THRESHOLD = 0.001
 local EPSILON = 0.0001
 
+--[=[
+	@within Springer
+	@interface Springer
+	.value number | Vector2 | Vector3 -- The current value of the spring.
+	.velocity number | Vector2 | Vector3 -- The current velocity of the spring.
+	.target number | Vector2 | Vector3 -- The target value of the spring.
+	.frequency number -- The frequency of the spring.
+	.damping number -- The damping of the spring.
+	.springType string -- The type of the spring value.
+	.isActive boolean -- Whether the spring is active or not.
+
+	.onComplete SpringerSignal -- The signal that fires when the spring reaches the target value.
+	.onStep SpringerSignal -- The signal that fires every frame with the current value of the spring.
+]=]
+
+--[=[
+	@within Springer
+	@prop onComplete SpringerSignal -- The signal that fires when the spring reaches the target value.
+	@tag Event -- This property is a signal that you can connect to with the `:Connect` method.
+
+	Fired when the spring reaches the target value, and is no longer animating.
+
+	```lua
+	local springer = Springer.new(0, 5, .2)
+	springer:SetTarget(1, 10, .8)
+	springer.onComplete:Connect(function()
+		print("Springer completed")
+	end)
+	```
+]=]
+
+--[=[
+	@within Springer
+	@prop onStep SpringerSignal -- The signal that fires every frame with the current value of the spring.
+	@tag Event -- This property is a signal that you can connect to with the `:Connect` method.
+
+	Fired every frame with the current value of the spring.
+	(RenderStepped for client, Heartbeat for server) 
+
+	```lua
+	local springer = Springer.new(0, 5, .2)
+	springer:SetTarget(1, 10, .8)
+	springer.onStep:Connect(function(value)
+		print(value)
+	end)
+	```
+]=]
 
 export type Springer = {
 	value: number | Vector2 | Vector3,
