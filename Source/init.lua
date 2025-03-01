@@ -101,32 +101,26 @@ export type Springer = {
 	end)
 	```
 
-	You can access all of the properties directly from the Springer instance.
-	It is recommended to use the `SetTarget` method to animate the spring.
-	Setting the properties directly will not animate the spring.
-	Here is the Springer Class:
+	Here is an example of how to use the Springer class to animate a Vector3 from (0, 10, 0) to (5, 15, 8) in 1 second:
 	```lua
-	export type Springer = {
-		value: number | Vector2 | Vector3,
-		velocity: number | Vector2 | Vector3,
-		target: number | Vector2 | Vector3,
-		frequency: number,
-		damping: number,
-		springType: string,
-		isActive: boolean,
-
-		onComplete: SpringerSignal.SpringerSignal,
-		onStep: SpringerSignal.SpringerSignal,
-
-		SetTarget: (self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?) -> Springer
-	}	
+	local springer = Springer.new(Vector3.new(0, 10, 0), 5, .2)
+	springer:SetTarget(Vector3.new(5, 15, 8), 10, .8)
+	springer.onStep:Connect(function(value)
+		print(value)
+	end)
+	springer.onComplete:Connect(function()
+		print("Springer completed")
+	end)
 	```
+
+	You can access all of the properties directly from the Springer instance.
 
 	:::note
 		When you call the `SetTarget` method, the spring will start animating towards the target value.
 		If you set any of the properties directly, the spring animation will override them.
 		Setting isActive to false will stop the spring animation.(It will then not call the onComplete signal)
 		Setting isActive to true will NOT start the spring animation. You need to call the SetTarget method to start the animation.
+		Setting the properties directly will not animate the spring.
 	:::
 ]=]
 local Springer = {}
