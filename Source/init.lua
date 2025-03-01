@@ -23,8 +23,17 @@ local EPSILON = 0.0001
 
 --[=[
 	@within Springer
-	@prop onComplete SpringerSignal -- The signal that fires when the spring reaches the target value.
-	@tag Event -- This property is a signal that you can connect to with the `:Connect` method.
+	@interface SpringerSignal
+	.new SpringerSignal -- Creates a new SpringerSignal instance.
+	.Connect (self: SpringerSignal, handler: (...any) -> ()) -> Connection -- Connects a function to the signal.
+	.Fire (self: SpringerSignal, ...any) -> () -- Fires the signal with the given arguments.
+	.Wait (self: SpringerSignal) -> ...any -- Yields the current thread until the signal is fired.
+]=]
+
+--[=[
+	@within Springer
+	@prop onComplete SpringerSignal
+	@tag Event
 
 	Fired when the spring reaches the target value, and is no longer animating.
 
@@ -39,8 +48,8 @@ local EPSILON = 0.0001
 
 --[=[
 	@within Springer
-	@prop onStep SpringerSignal -- The signal that fires every frame with the current value of the spring.
-	@tag Event -- This property is a signal that you can connect to with the `:Connect` method.
+	@prop onStep SpringerSignal
+	@tag Event
 
 	Fired every frame with the current value of the spring.
 	(RenderStepped for client, Heartbeat for server) 
