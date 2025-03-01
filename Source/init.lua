@@ -6,10 +6,6 @@ local VELOCITY_THRESHOLD = 0.001
 local POSITION_THRESHOLD = 0.001
 local EPSILON = 0.0001
 
---[=[
-	@within Springer
-	@type constructor.new -> Springer
-]=]
 export type Springer = {
 	value: number | Vector2 | Vector3,
 	velocity: number | Vector2 | Vector3,
@@ -24,6 +20,12 @@ export type Springer = {
 
 	SetTarget: (self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?) -> Springer
 }
+
+--[=[
+	@within Springer
+	@type new -> Springer
+]=]
+type new = (initialValue: number | Vector2 | Vector3, frequency: number?, damping: number?, initialGoal: (number | Vector2 | Vector3)?) -> Springer
 
 --[=[
 	@class Springer
