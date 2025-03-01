@@ -89,7 +89,7 @@ export type Springer = {
 	You can also listen to the `onStep` SpringerSignal to get the current value of the spring.
 	When the spring reaches the target value, the `onComplete` SpringerSignal will be fired.
 
-	Here is an example of how to use the Springer class to animate a number from 0 to 1 in 1 second:
+	Here is an example of how to use the Springer class to animate a number from 0 to 1:
 	```lua
 	local springer = Springer.new(0, 5, .2)
 	springer:SetTarget(1, 10, .8)
@@ -113,14 +113,21 @@ export type Springer = {
 	end)
 	```
 
-	You can access all of the properties directly from the Springer instance.
+	The springer class when begin animating immediately on the next frame if you pass the initial goal value.
+	Here is an example of how to use the Springer class to animate a number from 0 to 1 in 1 second immediately:
+	```lua
+	local springer = Springer.new(0, 5, .2, 1)
+	springer.onStep:Connect(function(value)
+		print(value)
+	end)
+	```
 
 	:::note
-		When you call the `SetTarget` method, the spring will start animating towards the target value.
-		If you set any of the properties directly, the spring animation will override them.
-		Setting isActive to false will stop the spring animation.(It will then not call the onComplete signal)
-		Setting isActive to true will NOT start the spring animation. You need to call the SetTarget method to start the animation.
-		Setting the properties directly will not animate the spring.
+		- When you call the `SetTarget` method, the spring will start animating towards the target value.
+		- If you set any of the properties directly, the spring animation will override them.
+		- Setting isActive to false will stop the spring animation.(It will then not call the onComplete signal)
+		- Setting isActive to true will NOT start the spring animation. You need to call the SetTarget method to start the animation.
+		- Setting the properties directly will not animate the spring.
 	:::
 ]=]
 local Springer = {}
