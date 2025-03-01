@@ -186,20 +186,6 @@ function Springer.SetTarget(self: Springer, newTarget: number | Vector2 | Vector
 	return self
 end
 
---[=[
-	Springer.new(initialValue: number | Vector2 | Vector3, frequency: number?, damping: number?, initialGoal: (number | Vector2 | Vector3)?): Springer
-
-		Creates a new Springer instance with the provided initial value, frequency, and damping.
-		You can also set the initial goal of the spring.
-
-		@param initialValue number | Vector2 | Vector3 -- The initial value of the spring.
-		@param frequency number? -- The frequency of the spring.
-		@param damping number? -- The damping of the spring.
-		@param initialGoal number | Vector2 | Vector3? -- The initial goal of the spring.
-
-		@return Springer -- The Springer instance.
-]=]
-
 local constructor = {}
 
 function constructor.new(initialValue: number | Vector2 | Vector3, frequency: number?, damping: number?, initialGoal: (number | Vector2 | Vector3)?): Springer
