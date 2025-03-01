@@ -25,8 +25,8 @@ export type Springer = {
 --[=[
 	@class Springer
 
-	Wally Package: [Springer](https://wally.run/package/naxious/springer)
-	
+	- Wally Package: [Springer](https://wally.run/package/naxious/springer)
+
 	Springer is a class that allows you to animate values using a spring physics model.
 	The values you can animate are numbers, Vector2, and Vector3.
 	You can set the target value, frequency, and damping to customize the spring.
