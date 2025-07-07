@@ -4,6 +4,7 @@ local SpringerSignal = require(script.SpringerSignal)
 
 local VELOCITY_THRESHOLD = 0.001
 local POSITION_THRESHOLD = 0.001
+local EPSILON = 0.0001
 
 --[=[
 	@within Springer
@@ -158,49 +159,73 @@ local function zeroValue(value)
 	end
 end
 
-local function stepSpringer(self: Springer, dt: number): Springer
+local function stepSpringer(self: Springer, deltaTime: number): Springer
 	if not self.isActive then
 		return self
 	end
 
-	local f = self.frequency
-	local d = self.damping
-
-	local value = self.value
+	local damping = self.damping
+	local angularFreq = self.frequency * 2 * math.pi
 	local target = self.target
-	local velocity = self.velocity
+	local currentVel = self.velocity
 
-	local offset = value - target
+	local displacement = self.value - target
+	local decay = math.exp(-damping * angularFreq * deltaTime)
+	local newVal, newVel
 
-	local angularFreq = 2 * math.pi * f
+	if damping == 1 then
+		newVal = target + (displacement + (currentVel + angularFreq * displacement) * deltaTime) * decay
+		newVel = (currentVel - angularFreq * (currentVel + angularFreq * displacement) * deltaTime) * decay
+	elseif damping < 1 then
+		local coeff = math.sqrt(1 - damping * damping)
+		local dtAngCoeff = angularFreq * coeff * deltaTime
+		local cosTerm = math.cos(dtAngCoeff)
+		local sinTerm = math.sin(dtAngCoeff)
 
-	local decay = math.exp(-d * angularFreq * dt)
-	local cosTerm = math.cos(angularFreq * math.sqrt(1 - d * d) * dt)
-	local sinTerm = math.sin(angularFreq * math.sqrt(1 - d * d) * dt)
+		local velocityScaling
+		if coeff > EPSILON then
+			velocityScaling = sinTerm / coeff
+		else
+			local scalar = deltaTime * angularFreq
+			velocityScaling = scalar
+				+ ((((scalar * scalar) * (coeff * coeff) * (coeff * coeff)) / 20) - (coeff * coeff))
+					* (scalar * scalar * scalar)
+					/ 6
+		end
 
-	local invSqrt = 1 / math.sqrt(1 - d * d)
-	local coeff = decay * invSqrt
+		newVal = target
+			+ (
+					(displacement * (cosTerm + damping * velocityScaling))
+					+ (currentVel * velocityScaling / angularFreq)
+				)
+				* decay
+		newVel = (currentVel * (cosTerm - damping * velocityScaling) - displacement * (velocityScaling * angularFreq))
+			* decay
+	else
+		local coeff = math.sqrt(damping * damping - 1)
+		local root1 = -angularFreq * (damping - coeff)
+		local root2 = -angularFreq * (damping + coeff)
+		local exp1 = math.exp(root1 * deltaTime)
+		local exp2 = math.exp(root2 * deltaTime)
+		local A = (currentVel - displacement * root2) / (root1 - root2)
+		local B = displacement - A
 
-	local newValue = target + coeff * (offset * cosTerm + (velocity + d * angularFreq * offset) / angularFreq * sinTerm)
-	local newVelocity = coeff
-		* (
-			-offset * angularFreq * sinTerm * invSqrt
-			+ (velocity + d * angularFreq * offset) * cosTerm
-			- d * angularFreq * (offset * cosTerm + (velocity + d * angularFreq * offset) / angularFreq * sinTerm)
-		)
+		newVal = target + A * exp1 + B * exp2
+		newVel = A * root1 * exp1 + B * root2 * exp2
+	end
 
-	if getMagnitude(newVelocity) < VELOCITY_THRESHOLD and getMagnitude(newValue - target) < POSITION_THRESHOLD then
+	if getMagnitude(newVel) < VELOCITY_THRESHOLD and getMagnitude(newVal - target) < POSITION_THRESHOLD then
 		self.value = target
-		self.velocity = zeroValue(newVelocity)
+		self.velocity = zeroValue(newVel)
 		if self.isActive then
 			self.onComplete:Fire()
 			self.isActive = false
 		end
-	else
-		self.value = newValue
-		self.velocity = newVelocity
+		return self
 	end
 
+	self.value = newVal
+	self.velocity = newVel
 	return self
 end
 
