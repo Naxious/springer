@@ -4,7 +4,6 @@ local SpringerSignal = require(script.SpringerSignal)
 
 local VELOCITY_THRESHOLD = 0.001
 local POSITION_THRESHOLD = 0.001
-local EPSILON = 0.0001
 
 --[=[
 	@within Springer
@@ -75,7 +74,12 @@ export type Springer = {
 	onComplete: SpringerSignal.SpringerSignal,
 	onStep: SpringerSignal.SpringerSignal,
 
-	SetTarget: (self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?) -> Springer
+	SetTarget: (
+		self: Springer,
+		newTarget: number | Vector2 | Vector3,
+		frequency: number?,
+		damping: number?
+	) -> Springer,
 }
 
 --[=[
@@ -154,64 +158,49 @@ local function zeroValue(value)
 	end
 end
 
-local function stepSpringer(self: Springer, deltaTime: number): Springer
+local function stepSpringer(self: Springer, dt: number): Springer
 	if not self.isActive then
 		return self
 	end
 
-	local damping = self.damping
-	local angularFreq = self.frequency * 2 * math.pi
+	local f = self.frequency
+	local d = self.damping
+
+	local value = self.value
 	local target = self.target
-	local currentVel = self.velocity
+	local velocity = self.velocity
 
-	local displacement = self.value - target
-	local decay = math.exp(-damping * angularFreq * deltaTime)
-	local newVal, newVel
+	local offset = value - target
 
-	if damping == 1 then
-		newVal = target + (displacement + (currentVel + angularFreq * displacement) * deltaTime) * decay
-		newVel = (currentVel - angularFreq * (currentVel + angularFreq * displacement) * deltaTime) * decay
-	elseif damping < 1 then
-		local coeff = math.sqrt(1 - damping * damping)
-		local dtAngCoeff = angularFreq * coeff * deltaTime
-		local cosTerm = math.cos(dtAngCoeff)
-		local sinTerm = math.sin(dtAngCoeff)
+	local angularFreq = 2 * math.pi * f
 
-		local velocityScaling
-		if coeff > EPSILON then
-			velocityScaling = sinTerm / coeff
-		else
-			local scalar = deltaTime * angularFreq
-			velocityScaling = scalar + ((((scalar * scalar) * (coeff * coeff) * (coeff * coeff)) / 20) - (coeff * coeff)) * (scalar * scalar * scalar) / 6
-		end
+	local decay = math.exp(-d * angularFreq * dt)
+	local cosTerm = math.cos(angularFreq * math.sqrt(1 - d * d) * dt)
+	local sinTerm = math.sin(angularFreq * math.sqrt(1 - d * d) * dt)
 
-		newVal = target + ((displacement * (cosTerm + damping * velocityScaling)) + (currentVel * velocityScaling / angularFreq)) * decay
-		newVel = (currentVel * (cosTerm - damping * velocityScaling) - displacement * (velocityScaling * angularFreq)) * decay
-	else
-		local coeff = math.sqrt(damping * damping - 1)
-		local root1 = -angularFreq * (damping - coeff)
-		local root2 = -angularFreq * (damping + coeff)
-		local exp1 = math.exp(root1 * deltaTime)
-		local exp2 = math.exp(root2 * deltaTime)
-		local A = (currentVel - displacement * root2) / (root1 - root2)
-		local B = displacement - A
-		
-		newVal = target + A * exp1 + B * exp2
-		newVel = A * root1 * exp1 + B * root2 * exp2
-	end
+	local invSqrt = 1 / math.sqrt(1 - d * d)
+	local coeff = decay * invSqrt
 
-	if getMagnitude(newVel) < VELOCITY_THRESHOLD and getMagnitude(newVal - target) < POSITION_THRESHOLD then
+	local newValue = target + coeff * (offset * cosTerm + (velocity + d * angularFreq * offset) / angularFreq * sinTerm)
+	local newVelocity = coeff
+		* (
+			-offset * angularFreq * sinTerm * invSqrt
+			+ (velocity + d * angularFreq * offset) * cosTerm
+			- d * angularFreq * (offset * cosTerm + (velocity + d * angularFreq * offset) / angularFreq * sinTerm)
+		)
+
+	if getMagnitude(newVelocity) < VELOCITY_THRESHOLD and getMagnitude(newValue - target) < POSITION_THRESHOLD then
 		self.value = target
-		self.velocity = zeroValue(newVel)
+		self.velocity = zeroValue(newVelocity)
 		if self.isActive then
 			self.onComplete:Fire()
 			self.isActive = false
 		end
-		return self
+	else
+		self.value = newValue
+		self.velocity = newVelocity
 	end
 
-	self.value = newVal
-	self.velocity = newVel
 	return self
 end
 
@@ -243,32 +232,37 @@ end
 
 	@return Springer -- The Springer instance.
 ]=]
-function Springer.SetTarget(self: Springer, newTarget: number | Vector2 | Vector3, frequency: number?, damping: number?): Springer
+function Springer.SetTarget(
+	self: Springer,
+	newTarget: number | Vector2 | Vector3,
+	frequency: number?,
+	damping: number?
+): Springer
 	if self.springType ~= typeof(newTarget) then
 		error(`Invalid target type. This spring accepts {self.springType} NOT {typeof(newTarget)}`)
 	end
 
 	self.target = newTarget
 	self.isActive = true
-	
+
 	local runConnection
 	local function update(deltaTime: number)
 		if self.isActive == false then
 			runConnection:Disconnect()
 			return
 		end
-		
+
 		stepSpringer(self, deltaTime)
 		self.onStep:Fire(self.value)
 	end
-	
+
 	if frequency then
 		self.frequency = frequency
 	end
 	if damping then
 		self.damping = damping
 	end
-	
+
 	if RunService:IsClient() then
 		runConnection = RunService.RenderStepped:Connect(function(deltaTime: number)
 			update(deltaTime)
@@ -293,7 +287,12 @@ local constructor = {}
 		Springer instances themselves, will not contain the .new method.
 	:::
 ]=]
-function constructor.new(initialValue: number | Vector2 | Vector3, frequency: number?, damping: number?, initialGoal: (number | Vector2 | Vector3)?): Springer
+function constructor.new(
+	initialValue: number | Vector2 | Vector3,
+	frequency: number?,
+	damping: number?,
+	initialGoal: (number | Vector2 | Vector3)?
+): Springer
 	local springerInstance = setmetatable({
 		value = initialValue or 0,
 		velocity = zeroValue(initialValue or 0),
@@ -303,11 +302,11 @@ function constructor.new(initialValue: number | Vector2 | Vector3, frequency: nu
 		springType = typeof(initialValue),
 		isActive = false,
 		onComplete = SpringerSignal.new(),
-		onStep = SpringerSignal.new()
+		onStep = SpringerSignal.new(),
 	}, {
-		__index = Springer
+		__index = Springer,
 	})
-	
+
 	if initialGoal then
 		task.defer(function()
 			if RunService:IsClient() then
@@ -318,7 +317,7 @@ function constructor.new(initialValue: number | Vector2 | Vector3, frequency: nu
 			springerInstance:SetTarget(initialGoal)
 		end)
 	end
-	
+
 	return springerInstance
 end
 
